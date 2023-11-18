@@ -8,6 +8,26 @@
 plugins {
 	id 'java'
 	id 'application'
+ 	id "com.github.gmazzo.wsdl" version "0.2"
 }
 
 mainClassName = "App"
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation group: 'jakarta.xml.ws', name: 'jakarta.xml.ws-api', version: '4.0.1'
+	implementation group: 'com.sun.xml.ws', name: 'jaxws-rt', version: '4.0.2'
+	implementation group: 'com.sun.xml.ws', name: 'jaxws-ri', version: '4.0.2', ext: 'pom'
+}
+
+import com.github.gmazzo.gradle.plugins.tasks.DownloadWSDL
+
+task downloadWsdls(type: DownloadWSDL) { self ->
+    into 'src/main/wsdl' // where to store the downloaded files
+    from 'http://localhost:8085/servico/certidao?wsdl' // just an URL, the local name will be picked from it
+
+    wsImport.dependsOn self // optional, links this task to the build graph, forcing it to run before `wsImport`
+}
